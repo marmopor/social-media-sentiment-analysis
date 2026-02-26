@@ -47,9 +47,9 @@ Accuracy, F1-score y Matriz de confusión.
 
 | Modelo | Nº Parámetros | Acc Train | Acc Val | Acc Test | F1 Train | F1 Val | F1 Test |
 |--------|:-------------:|:---------:|:-------:|:--------:|:--------:|:------:|:-------:|
-| Logistic Regression | N/A | - | - | - | - | - | - |
-| Random Forest | - | - | - | - | - | - | - |
-| Simple MLP | - | - | - | - | - | - | - |
+| Logistic Regression | N/A | 0.8555 | 0.7182 | 0.7455 | 0.7094 | 0.4492 | 0.5178 |
+| Random Forest | 5,236 | 0.8105 | 0.6818 | 0.7455 | 0.6839 | 0.3563 | 0.5068 |
+| Simple MLP | 7,043 | 0.5840 | 0.4909 | 0.4727 | 0.3924 | 0.3183 | 0.3259 |
 
 ### Descripción de modelos
 
