@@ -41,3 +41,39 @@ Clasificación supervisada multiclase (3 clases: Positive, Negative, Neutral) a 
 
 ## DEFINCIÓN DE MÉTRICAS:
 Accuracy, Precision, Recall, F1-score Y Matriz de confusión.
+
+## Resultados ENTREGA2: 
+### Métricas por modelo
+
+| Modelo | Nº Parámetros | Acc Train | Acc Val | Acc Test | F1 Train | F1 Val | F1 Test |
+|--------|:-------------:|:---------:|:-------:|:--------:|:--------:|:------:|:-------:|
+| Logistic Regression | N/A | - | - | - | - | - | - |
+| Random Forest | - | - | - | - | - | - | - |
+| Simple MLP | - | - | - | - | - | - | - |
+
+### Descripción de modelos
+
+#### 1. Modelo Lineal — `02_linear_model.ipynb`
+- **Algoritmo:** Logistic Regression (multinomial, solver LBFGS)
+- **Features:** TF-IDF (500 tokens, unigrams+bigrams) + 6 features numéricas
+- **Split:** 70% train / 15% val / 15% test
+
+#### 2. Modelo ML — `03_ml_model.ipynb`
+- **Algoritmo:** Random Forest (100 árboles, profundidad máx. 10)
+- **Features:** TF-IDF (500 tokens) + 6 features numéricas
+- **Parámetros:** Número total de nodos en todos los árboles
+- **Split:** 70% train / 15% val / 15% test
+
+#### 3. Red Neuronal Simple — `04_neural_network.ipynb`
+- **Arquitectura:** `Linear(106, 64) → ReLU → Linear(64, 3)`
+- **Features:** TF-IDF (100 tokens) + 6 features numéricas → 106 features de entrada
+- **Optimizador:** Adam (lr=1e-3), **Loss:** CrossEntropy
+- **Épocas:** 100, **Batch size:** 32
+- **Modelo definido en:** `models/simple_nn.py`
+- **Split:** 70% train / 15% val / 15% test
+
+## Preprocesado común
+1. **Limpieza:** strip de espacios en texto y etiquetas de sentimiento
+2. **Agrupación de clases:** los 191 sentimientos finos se mapean a 3 clases (Positivo / Neutro / Negativo)
+3. **TF-IDF:** ajustado únicamente sobre el conjunto de entrenamiento
+4. **Features numéricas:** Retweets, Likes, Year, Month, Day, Hour
