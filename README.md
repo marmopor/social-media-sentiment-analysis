@@ -40,7 +40,7 @@ Clasificación supervisada multiclase (3 clases: Positive, Negative, Neutral) a 
   Hashtags : hashtags utilizados
 
 ## DEFINCIÓN DE MÉTRICAS:
-Accuracy, Precision, Recall, F1-score Y Matriz de confusión.
+Accuracy, F1-score y Matriz de confusión.
 
 ## Resultados ENTREGA2: 
 ### Métricas por modelo
