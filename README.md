@@ -45,9 +45,9 @@ Accuracy, F1-score y Matriz de confusión.
 ## Resultados ENTREGA2: 
 ### Métricas por modelo
 
-| Modelo | Nº Parámetros | Acc Train | Acc Val | Acc Test | F1 Train | F1 Val | F1 Test |
-|--------|:-------------:|:---------:|:-------:|:--------:|:--------:|:------:|:-------:|
-| Logistic Regression | N/A | 0.8555 | 0.7182 | 0.7455 | 0.7094 | 0.4492 | 0.5178 |
+| Modelo | Nº Parámetros | Acc Train | Acc Val | Acc Test | F1 Train | F1 Val | F1 Test | Prec Train | Prec Val | Prec Test | Rec Train | Rec Val | Rec Test |
+|--------|:-------------:|:---------:|:-------:|:--------:|:--------:|:------:|:-------:|:----------:|:--------:|:-----------:|:-------:|:---------:|:---------:|
+| Logistic Regression | N/A | 0.8555 | 0.7182 | 0.7455 | 0.7094 | 0.4492 | 0.5178 | 0.8945 | 0.5149 | 0.8306 | 0.6686 | 0.4521 | 0.4999 |
 | Random Forest | 5,236 | 0.8105 | 0.6818 | 0.7455 | 0.6839 | 0.3563 | 0.5068 |
 | Simple MLP | 7,043 | 0.5840 | 0.4909 | 0.4727 | 0.3924 | 0.3183 | 0.3259 |
 
