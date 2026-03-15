@@ -97,16 +97,21 @@ Accuracy, F1-score, Precision, Recall y Matriz de confusión.
 
 | Modelo | Nº Parámetros | Acc Train | Acc Val | Acc Test | F1 Train | F1 Val | F1 Test |
 |--------|:-------------:|:---------:|:-------:|:--------:|:--------:|:------:|:-------:|
-| Deep MLP | 22,531 | 0.6367 | 0.4727 | 0.5455 | 0.5830 | 0.3840 | 0.5073 |
+| Deep MLP | 90,723 | 0.8438 | 0.5909 | 0.6455 | 0.7886 | 0.4944 | 0.5407 |
 | TextCNN | 74,851 | 0.9766 | 0.5636 | 0.6636 | 0.9694 | 0.5063 | 0.5914 |
-| BiLSTM | 86,499 | 0.4277 | 0.3455 | 0.3455 | 0.4353 | 0.3345 | 0.3381 |
+| BiLSTM | 86,275 | 0.6641 | 0.6545 | 0.6364 | 0.3141 | 0.2877 | 0.2593 ||
 
 ### Conclusiones de los Modelos Complejos 
 
 #### 1.Deep MLP
-- **Análisis:** Aunque el accuracy es de 54.6%, la robustez es superior. La brecha entre Train (63.7%) y Validation (47.3%) es mínima.
-- **Convergencia:** Las curvas muestran un aprendizaje sintonizado. No hay sobreajuste agresivo; el modelo aprende patrones estables gracias a los bloques residuales y la regularización GELU.
-- **Predominancia por Plataforma:** Sesgo hacia **Neutro** en Facebook, Instagram y Twitter, lo cual es capturado de forma equilibrada por este modelo.
+- **Análisis:** El Deep MLP obtiene el mejor rendimiento global del experimento con un 64.55% de accuracy en test, superando claramente al resto de arquitecturas evaluadas. Durante el entrenamiento alcanza un 84.38% de accuracy, lo que indica que el modelo aprende correctamente los patrones presentes en el conjunto de entrenamiento.
+
+Sin embargo, se observa una diferencia moderada entre entrenamiento y validación (84.38% vs 59.09%), lo que sugiere cierto grado de sobreajuste, aunque este se mantiene controlado gracias a las técnicas de regularización utilizadas.
+
+- **Convergencia:** Las curvas de entrenamiento muestran una convergencia progresiva y relativamente estable. El modelo mejora hasta aproximadamente la época 50–60, el early stopping detiene el entrenamiento en la época 68, evitando un sobreajuste más fuerte. Esto indica que es capaz de capturar patrones relevantes sin degradar excesivamente la capacidad de generalización.
+  
+- **Predominancia por Plataforma:** El modelo presenta un rendimiento significativamente mayor en la clase Positivo, con un F1 de 0.8062 en test, mientras que las clases Negativo y especialmente Neutro resultan más difíciles de distinguir. Este comportamiento refleja el desbalance del dataset, donde la clase positiva tiene mayor representación.
+
 
 #### 2.TextCNN
 - **Análisis:**. El accuracy en test es del 66.4%.
@@ -114,25 +119,27 @@ Accuracy, F1-score, Precision, Recall y Matriz de confusión.
 - **Predominancia por Plataforma:** Logra detectar mejor las variaciones, pero sigue reportando **Neutro** como la clase dominante en todas las plataformas debido a la naturaleza del dataset mapeado.
 
 #### 3.BiLSTM
-- **Análisis:** El accuracy es del 34.6%** en test, pero sigue es el modelo más frágil. Logra mayor estabilidad que la versión original de 2 capas, pero el volumen de datos (732 muestras) sigue siendo insuficiente para una arquitectura secuencial LSTM.
-- **Convergencia:** Las curvas son muy ruidosas. Se observa un descenso de accuracy en las primeras 20 épocas seguido de una recuperación inestable. Esto sugiere que el modelo lucha por encontrar una representación semántica coherente en secuencias cortas con mucho desbalance.
-  
-- **Conclusión General:** Para este dataset específico, el **enfoque de Ventana (CNN)** y el **enfoque de Features (MLP)** son muy superiores al **enfoque Secuencial (BiLSTM)**.
+- **Análisis:** El modelo BiLSTM obtiene un accuracy de 63.64% en test, aparentemente cercano al del MLP. Sin embargo, el análisis del clasificación muestra que el modelo predice casi exclusivamente la clase Positivo.
 
+Esto se refleja en el F1-macro bajo (0.2593) y en métricas negativas como el MCC (-0.0568) y Kappa (-0.0152), lo que indica una capacidad real de clasificación muy limitada.
+
+- **Convergencia:** Las curvas de entrenamiento son relativamente estables y muestran una convergencia temprana alrededor de la época 30–40. No obstante, esta estabilidad se debe en gran medida a que el modelo aprende una estrategia basada en la clase mayoritaria.
+  
 
 ### Descripción de modelos
 
-#### 4. Deep MLP — `05_deep_mlp.ipynb`
-- **Algoritmo:** Multi-Layer Perceptron Profundo
-- **Arquitectura:** Varias capas lineales intercaladas por BatchNorm, ReLU y Dropout (0.5)
+#### 4. Deep MLP - `05_deep_mlp.ipynb`
+- **Algoritmo:** Multi-Layer Perceptron Profundo para clasificación multiclase
+- **Arquitectura:** Varias capas lineales intercaladas por BatchNorm, ReLU y Dropout (0.5) para mejorar la estabilidad y reducir el sobreajuste
 - **Features:** TF-IDF (100 tokens) + 6 numéricas -> 106 dimensional vector
-- **Optimizador:** Adam (lr=1e-3, weight_decay=1e-4) + ReduceLROnPlateau, **Loss:** CrossEntropy con pesos de clase
+- **Optimizador:** Adam (lr=1e-3, weight_decay=1e-4) + ReduceLROnPlateau, **Loss:** CrossEntropy con pesos de clase para compensar el desbalance del dataset
 - **Épocas:** 150 (Early Stopping), **Batch size:** 32
 - **Modelo definido en:** `models/deep_mlp.py`
 - **Split:** 70% train / 15% val / 15% test
 
-#### 5. TextCNN — `06_cnn_text.ipynb`
-- **Algoritmo:** Red Neuronal Convolucional 1D
+
+#### 5. TextCNN - `06_cnn_text.ipynb`
+- **Algoritmo:** Red Neuronal Convolucional 1D 
 - **Arquitectura:** Embedding (dim=64), Conv1D paralelas (kernels 2, 3, 4), MaxPool temporal, Dropout (0.5), FC
 - **Features:** Texto tokenizado -> secuencias de índices (vocabulario de ~3000 palabras)
 - **Optimizador:** Adam (lr=5e-4, weight_decay=1e-3) + ReduceLROnPlateau, **Loss:** CrossEntropy con pesos de clase
@@ -140,9 +147,10 @@ Accuracy, F1-score, Precision, Recall y Matriz de confusión.
 - **Modelo definido en:** `models/cnn_text.py`
 - **Split:** 70% train / 15% val / 15% test
 
-#### 6. BiLSTM — `07_lstm.ipynb`
-- **Arquitectura:** `Embedding(vocab, 128) -> BiLSTM(128, 2 capas) -> Concat hidden -> Dropout(0.5) -> Linear(256, 64) -> ReLU -> Dropout(0.5) -> Linear(64, 3)`
-- **Features:** Texto tokenizado -> secuencias de índices (vocabulario de ~3000 palabras)
+#### 6. BiLSTM - `07_lstm.ipynb`
+- **Algoritmo:** Red neuronal recurrente Bidirectional LSTM para modelado secuencial de texto
+- **Arquitectura:** `Embedding(vocab, 128) -> BiLSTM(128, 2 capas) -> Concat hidden -> Dropout(0.5) -> Linear(256, 64) -> ReLU -> Dropout(0.5) -> Linear(64, 3) `
+- **Features:** Texto tokenizado -> secuencias de índices (vocabulario de aprox. 3000 palabras)
 - **Bidireccional:** Captura contexto pasado y futuro de cada palabra
 - **Optimizador:** Adam (lr=1e-3) + ReduceLROnPlateau, **Loss:** CrossEntropy con pesos de clase
 - **Gradient clipping:** 1.0 para estabilidad del LSTM
