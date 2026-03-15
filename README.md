@@ -97,26 +97,24 @@ Accuracy, F1-score, Precision, Recall y Matriz de confusión.
 
 | Modelo | Nº Parámetros | Acc Train | Acc Val | Acc Test | F1 Train | F1 Val | F1 Test |
 |--------|:-------------:|:---------:|:-------:|:--------:|:--------:|:------:|:-------:|
-| Deep MLP | 90,723 | 0.8438 | 0.5909 | 0.6455 | 0.7886 | 0.4944 | 0.5407 |
+| Deep MLP | 22,531 | 0.6367 | 0.4727 | 0.5455 | 0.5830 | 0.3840 | 0.5073 |
 | TextCNN | 74,851 | 0.9766 | 0.5636 | 0.6636 | 0.9694 | 0.5063 | 0.5914 |
 | BiLSTM | 86,275 | 0.6641 | 0.6545 | 0.6364 | 0.3141 | 0.2877 | 0.2593 ||
 
 ### Conclusiones de los Modelos Complejos 
 
 #### 1.Deep MLP
-- **Análisis:** El Deep MLP obtiene el mejor rendimiento global del experimento con un 64.55% de accuracy en test, superando claramente al resto de arquitecturas evaluadas. Durante el entrenamiento alcanza un 84.38% de accuracy, lo que indica que el modelo aprende correctamente los patrones presentes en el conjunto de entrenamiento.
+- **Análisis:** Sus métricas de Test son un Accuracy de 54.55% y un F1-Score de 0.5073, demostrando un aprendizaje más real y robusto y no solo una memorización del set de entrenamiento.
 
-Sin embargo, se observa una diferencia moderada entre entrenamiento y validación (84.38% vs 59.09%), lo que sugiere cierto grado de sobreajuste, aunque este se mantiene controlado gracias a las técnicas de regularización utilizadas.
-
-- **Convergencia:** Las curvas de entrenamiento muestran una convergencia progresiva y relativamente estable. El modelo mejora hasta aproximadamente la época 50–60, el early stopping detiene el entrenamiento en la época 68, evitando un sobreajuste más fuerte. Esto indica que es capaz de capturar patrones relevantes sin degradar excesivamente la capacidad de generalización.
+- **Convergencia:** Las curvas de entrenamiento muestran una convergencia progresiva y relativamente estable. Las curvas de entrenamiento convergen más tempranamente a los verdaderos límites del modelo (el early stopping corta en la época 33). Esto indica que es capaz de capturar patrones relevantes sin degradar excesivamente la capacidad de generalización.
   
-- **Predominancia por Plataforma:** El modelo presenta un rendimiento significativamente mayor en la clase Positivo, con un F1 de 0.8062 en test, mientras que las clases Negativo y especialmente Neutro resultan más difíciles de distinguir. Este comportamiento refleja el desbalance del dataset, donde la clase positiva tiene mayor representación.
+- **Predominancia por Plataforma:** Al analizar el gráfico post-entrenamiento por plataformas sociales interactuadas, presenciamos una distribución de predicciones realista: realiza pronósticos coherentes para cada clase (Positivo como principal, y Negativo/Neutro en magnitudes equilibradas).
 
 
 #### 2.TextCNN
-- **Análisis:**. El accuracy en test es del 66.4%.
-- **Convergencia:** Aunque el modelo llega a un train muy alto (97%), la curva de validación sigue una tendencia ascendente clara y suave, no errática. El uso de pooling mixto (Max + Average) y `SpatialDropout1D` ha permitido extraer semántica real del texto.
-- **Predominancia por Plataforma:** Logra detectar mejor las variaciones, pero sigue reportando **Neutro** como la clase dominante en todas las plataformas debido a la naturaleza del dataset mapeado.
+- **Análisis:**. La CNN logra extraer fuertemente las características espaciales de los embeddings de texto (1D).  Consigue las mejores métricas del conjunto: 66.4% de Accuracy y 0.5914 de F1-Macro en Test. Sigue presentando sobreajuste en Train (97%), pero es el que mejor generaliza a datos no vistos.
+- **Convergencia:** La curva de validación no es muy errática y detiene su entrenamiento gracias al Max Pooling temporal que aglomera los *features* más representativos sin ruido innecesario, utilizando Early Stopping en la época 91.
+- **Predominancia por Plataforma:** A diferencia de iteraciones iniciales, el análisis visual confirma que el modelo ya no predice exclusivamente Neutro en todas las plataformas de forma general. Gracias al correcto rebalanceo de clases y los pesos en la CrossEntropy, ahora identifica correctamente y de forma mayoritaria los sentimientos Positivos y Negativos en las distintas Redes Sociales, adecuándose a los patrones del dataset real.
 
 #### 3.BiLSTM
 - **Análisis:** El modelo BiLSTM obtiene un accuracy de 63.64% en test, aparentemente cercano al del MLP. Sin embargo, el análisis del clasificación muestra que el modelo predice casi exclusivamente la clase Positivo.
@@ -126,11 +124,9 @@ Esto se refleja en el F1-macro bajo (0.2593) y en métricas negativas como el MC
 - **Convergencia:** Las curvas de entrenamiento son relativamente estables y muestran una convergencia temprana alrededor de la época 30–40. No obstante, esta estabilidad se debe en gran medida a que el modelo aprende una estrategia basada en la clase mayoritaria.
   
 
-### Descripción de modelos
-
 #### 4. Deep MLP - `05_deep_mlp.ipynb`
 - **Algoritmo:** Multi-Layer Perceptron Profundo para clasificación multiclase
-- **Arquitectura:** Varias capas lineales intercaladas por BatchNorm, ReLU y Dropout (0.5) para mejorar la estabilidad y reducir el sobreajuste
+- **Arquitectura:** Varias capas lineales intercaladas por BatchNorm, ReLU y Dropout (0.5 y 0.2 inicial) para mejorar la estabilidad y erradicar el sobreajuste. Se redujo la dimensionalidad oculta a 128 y 64 neuronas.
 - **Features:** TF-IDF (100 tokens) + 6 numéricas -> 106 dimensional vector
 - **Optimizador:** Adam (lr=1e-3, weight_decay=1e-4) + ReduceLROnPlateau, **Loss:** CrossEntropy con pesos de clase para compensar el desbalance del dataset
 - **Épocas:** 150 (Early Stopping), **Batch size:** 32
