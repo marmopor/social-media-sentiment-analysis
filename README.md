@@ -122,7 +122,8 @@ Accuracy, F1-score, Precision, Recall y Matriz de confusión.
 Esto se refleja en el F1-macro bajo (0.2593) y en métricas negativas como el MCC (-0.0568) y Kappa (-0.0152), lo que indica una capacidad real de clasificación muy limitada.
 
 - **Convergencia:** Las curvas de entrenamiento son relativamente estables y muestran una convergencia temprana alrededor de la época 30–40. No obstante, esta estabilidad se debe en gran medida a que el modelo aprende una estrategia basada en la clase mayoritaria.
-  
+
+- **Predominancia por Plataforma:**
 
 #### 4. Deep MLP - `05_deep_mlp.ipynb`
 - **Algoritmo:** Multi-Layer Perceptron Profundo para clasificación multiclase
